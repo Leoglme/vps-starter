@@ -1,0 +1,62 @@
+name: 🚀 Build and Deploy Nuxt.js 3 App to ovh vps
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: 🏗️ Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🛠️ Build App
+        run: npm run build
+
+      - name: 🗑️ Remove node_modules from .output/server
+        run: rm -rf .output/server/node_modules
+
+      - name: 📝 Modify package.json
+        run: |
+          mv .output/server/package.json .output/package.json
+          jq '{name: .name, version: .version, private: .private, dependencies: .bundledDependencies}' .output/package.json > .output/temp.json
+          mv .output/temp.json .output/package.json
+
+      - name: 📝 Create server.js
+        run: echo "import('./server/index.mjs');" > .output/server.js
+
+      - name: 📤 Deploy to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: ".output/"
+          target: "/var/www/dibodev.com/html"
+
+      - name: 🚀 Install dependencies and restart Server with PM2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/dibodev.com/html/.output
+            npm install
+            pm2 restart dibodev.com || pm2 start server.js --name dibodev.com

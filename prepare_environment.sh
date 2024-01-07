@@ -29,4 +29,8 @@ sudo apt install -y nodejs
 echo "Installing npm..."
 sudo apt install -y npm
 
+# Installing pm2 (if necessary)
+echo "Installing pm2..."
+sudo npm install -y pm2@latest -g
+
 echo "Environment has been successfully prepared."
