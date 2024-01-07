@@ -18,12 +18,12 @@ This repository contains scripts to simplify the configuration and deployment of
 ### Preparing the Environment
 1. Clone this repository to your VPS or directly download the scripts.
 2. Make the `prepare_environment.sh` script executable by running `chmod +x prepare_environment.sh`
-3. Run the script with `./prepare_environment.sh`
+3. Run the script with `sudo sh ./prepare_environment.sh`
 
 ### Setting up a Website
 1. Clone this repository to your VPS or directly download the scripts.
 2. Make the `setup_site.sh` script executable by running `chmod +x setup_site.sh`
-3. Run the script with `./setup_site.sh example.com`
+3. Run the script with `sudo sh ./setup_site.sh example.com`
 <br>
 Replace `example.com` with your domain or subdomain name.
 
