@@ -71,7 +71,13 @@ echo "server {
 }" | sudo tee "$CONFIG_FILE"
 
 # Enabling the site
-sudo ln -s /etc/nginx/sites-available/"$DOMAIN" /etc/nginx/sites-enabled/
+if [ ! -L "/etc/nginx/sites-enabled/$DOMAIN" ]; then
+    sudo ln -s /etc/nginx/sites-available/"$DOMAIN" /etc/nginx/sites-enabled/
+else
+    echo "The symbolic link for $DOMAIN already exists."
+    sudo rm /etc/nginx/sites-enabled/"$DOMAIN"
+    sudo ln -s /etc/nginx/sites-available/"$DOMAIN" /etc/nginx/sites-enabled/
+fi
 
 # Testing Nginx configuration
 sudo nginx -t
