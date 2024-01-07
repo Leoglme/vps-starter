@@ -21,4 +21,12 @@ sudo systemctl start nginx
 echo "Installing dig..."
 sudo apt install -y dnsutils
 
+# Installing node.js (if necessary)
+echo "Installing node.js..."
+sudo apt install -y nodejs
+
+# Installing npm (if necessary)
+echo "Installing npm..."
+sudo apt install -y npm
+
 echo "Environment has been successfully prepared."
