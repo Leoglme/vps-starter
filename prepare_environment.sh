@@ -17,4 +17,8 @@ echo "Enabling Nginx..."
 sudo systemctl enable nginx
 sudo systemctl start nginx
 
+# Installing dig (if necessary)
+echo "Installing dig..."
+sudo apt install -y dnsutils
+
 echo "Environment has been successfully prepared."
