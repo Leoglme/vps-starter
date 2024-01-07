@@ -33,7 +33,7 @@ Each folder contains a `deploy-vps.yml` file for GitHub Actions and an `nginx.co
 ### Setting up a Website
 1. Clone this repository to your VPS or directly download the scripts.
 2. Make the `setup_site.sh` script executable by running `chmod +x setup_site.sh`
-3. Run the script with `sudo sh ./setup_site.sh example.com`
+3. Run the script with `sudo sh ./setup_site.sh example.com` 
 <br>
 Replace `example.com` with your domain or subdomain name.
 
@@ -48,6 +48,16 @@ Replace `example.com` with your domain or subdomain name.
 5. Replace `dibodev.com` with your pm2 process name.
 6. Customize the `nginx.conf` file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
 
+## Resolve problems
+- resolve the right problem on job 📤 Deploy to VPS
+  - check whether the user `SSH_USERNAME` has the necessary rights to the path `/var/www/[domain]/html`: 
+  ```shell
+    ls -ld /var/www/[domain]/html
+  ```
+    - if not, change the owner of the path `/var/www/[domain]/html` to the user `SSH_USERNAME`:
+    ```shell
+        sudo chown -R [SSH_USERNAME]:[SSH_USERNAME] /var/www/[domain]/html
+    ```
 
 ## Contributions
 Contributions to this project are welcome. Feel free to propose improvements or report issues via GitHub issues.
