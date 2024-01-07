@@ -44,7 +44,7 @@ Replace `example.com` with your domain or subdomain name.
 1. Navigate to the folder for your technology (e.g. `nuxtjs3`).
 2. Use the `deploy-vps.yml` in your GitHub Actions workflow to automate the deployment process.
 3. Add `SSH_HOST`, `SSH_USERNAME`, `SSH_PRIVATE_KEY`, and `SSH_PORT` as secrets to your GitHub repository.
-4. Replace `/var/www/dibodev.com/html` with the path to your Nuxt.js 3 application on your VPS.
+4. Replace `/var/www/dibodev.com/html` with the path to your application on your VPS.
 5. Replace `dibodev.com` with your pm2 process name.
 6. Customize the `nginx.conf` file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
 
