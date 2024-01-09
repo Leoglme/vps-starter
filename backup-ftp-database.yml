@@ -1,0 +1,40 @@
+name: Backup MariaDB Database FTP
+on:
+  schedule:
+    - cron: '0 */12 * * *' # Run every 12 hours, backup at 00:00 and 12:00 each day
+  workflow_dispatch:
+
+  jobs:
+    backup_database:
+      runs-on: self-hosted
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Install MariaDB Client and Gzip
+          run: sudo apt-get update && sudo apt-get install -y gzip mariadb-client
+
+        - name: MySQLDump - Connect Database and Backup MariaDB Database FTP
+          run: |
+            mkdir backup_database && cd backup_database
+            FILENAME="database_${{ secrets.DATABASE_DB_NAME }}_backup-$(date +%d-%m-%Y-%H-%M-%S).sql.gz"
+            mysqldump \
+              --host='${{ secrets.DATABASE_HOST }}' \
+              --user='${{ secrets.DATABASE_USERNAME }}' \
+              --password='${{ secrets.DATABASE_PASSWORD }}' \
+              --databases ${{ secrets.DATABASE_DB_NAME }} | gzip > $FILENAME
+
+        - name: Set the current date and time
+          run: echo "CURRENT_DATETIME=$(date +%d-%m-%Y-%H-%M-%S)" >> $GITHUB_ENV
+
+        - name: Deploy backup .sql to FTP
+          uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+          with:
+            server: ${{ secrets.SERVER_FTP_HOST }}
+            username: ${{ secrets.SERVER_FTP_USERNAME }}
+            password: ${{ secrets.SERVER_FTP_PASSWORD }}
+            port: ${{ secrets.SERVER_FTP_PORT }}
+            protocol: ftp
+            local-dir: ./backup_databases/
+            server-dir: backup_databases/
+            state-name: .ftp-deploy-sync-state-${{ secrets.DATABASE_DB_NAME }}-${{ env.CURRENT_DATETIME }}.json
