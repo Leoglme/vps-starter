@@ -1,0 +1,73 @@
+name: 🚀 Deploy API to OVH VPS
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      APP_DIR: /var/www/dibodev.com
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🔍 Install dependencies
+        run: npm install
+
+      - name: 📝 Create .env file
+        run: |
+          echo "PORT=3333" > .env
+          echo "HOST=0.0.0.0" >> .env
+          echo "NODE_ENV=production" >> .env
+          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
+          echo "DRIVE_DISK=local" >> .env
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
+          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
+          echo "MYSQL_PORT=3306" >> .env
+          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
+          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
+          echo "CACHE_VIEWS=false" >> .env
+          echo "BASE_URL=https://dibodev.com" >> .env
+
+      - name: 🧱 Build application
+        run: |
+          npm run build
+          cp .env build/.env
+
+      - name: 🛁 Clean install for production
+        run: cd build && npm ci --production --ignore-scripts
+
+      - name: 📤 Deploy to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "./build/"
+          target: ${{ env.APP_DIR }}/html
+
+      - name: 🚀 Restart API with PM2, Run Migrations and Seeders
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.APP_DIR }}/html/build
+            pm2 restart dibodev.com || pm2 start server.js --name dibodev.com
+            pm2 save
+            node ace migration:run --force
+            node ace db:seed

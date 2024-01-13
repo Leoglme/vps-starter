@@ -38,15 +38,45 @@ Each folder contains a `deploy-vps.yml` file for GitHub Actions and an `nginx.co
 Replace `example.com` with your domain or subdomain name.
 
 
-## Nuxt.js 3 / Vue.js 3 / AdonisJS Deployment
-### How to Use
+## Specific Deployment Instructions
 
-1. Navigate to the folder for your technology (e.g. `nuxtjs3`).
-2. Use the `deploy-vps.yml` in your GitHub Actions workflow to automate the deployment process.
+### Nuxt.js 3 Deployment
+
+- #### GitHub Actions Workflow
+1. Navigate to the [nuxtjs3](nuxtjs3) directory.
+2. Use the [deploy-vps.yml](nuxtjs3/deploy-vps.yml) in your GitHub Actions workflow to automate the deployment process.
 3. Add `SSH_HOST`, `SSH_USERNAME`, `SSH_PRIVATE_KEY`, and `SSH_PORT` as secrets to your GitHub repository.
 4. Replace `/var/www/dibodev.com/html` with the path to your application on your VPS.
 5. Replace `dibodev.com` with your pm2 process name.
-6. Customize the `nginx.conf` file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
+
+- #### Nginx Configuration
+1. Customize the [nginx.conf](nuxtjs3/nginx.conf) file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
+
+
+### Vue.js 3 Deployment
+
+- Navigate to the `vuejs3` directory.
+
+- #### GitHub Actions Workflow
+Coming soon... 
+
+- #### Nginx Configuration 
+Coming soon...
+
+### AdonisJS Deployment
+
+- #### GitHub Actions Workflow
+1. Navigate to the [adonisjs](adonisjs) directory.
+2. Use the [deploy-vps.yml](adonisjs/deploy-vps.yml) in your GitHub Actions workflow to automate the deployment process.
+3. Add `SSH_HOST`, `SSH_USERNAME`, `SSH_PRIVATE_KEY`, and `SSH_PORT` as secrets to your GitHub repository.
+4. To generate .env file, add `APP_KEY`, `MYSQL_DATABASE`, `MYSQL_HOST`, `MYSQL_USER`, `MYSQL_ROOT_PASSWORD` as secrets to your GitHub repository.
+5. Replace `/var/www/dibodev.com/html` with the path to your application on your VPS.
+6. Replace `dibodev.com` with your pm2 process name.
+
+- #### Nginx Configuration
+1. Customize the [nginx.conf](adonisjs/nginx.conf) file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
+
+
 
 ## Resolve problems
 - resolve the right problem on job 📤 Deploy to VPS
