@@ -2,6 +2,27 @@
 
 This repository contains scripts to simplify the configuration and deployment of websites on a VPS server. It is particularly useful for system administrators and developers who want to automate the setting up of websites with Nginx and secure them with SSL certificates from Let's Encrypt.
 
+# Table of Contents
+
+- [Structure](#structure)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Usage](#usage)
+  - [Preparing the Environment](#preparing-the-environment)
+  - [Setting up a Website](#setting-up-a-website)
+- [Specific Deployment Instructions](#specific-deployment-instructions)
+  - [Nuxt.js 3 Deployment](#nuxtjs-3-deployment)
+  - [Vue.js 3 Deployment](#vuejs-3-deployment)
+  - [AdonisJS Deployment](#adonisjs-deployment)
+- [Automated Database Backup](#automated-database-backup)
+  - [Backup MariaDB Database to FTP](#backup-mariadb-database-to-ftp)
+    - [Workflow Details](#workflow-details)
+    - [Steps Performed](#steps-performed)
+    - [Configuration](#configuration)
+- [Resolve problems](#resolve-problems)
+- [Contributions](#contributions)
+- [License](#license)
+
 ## Structure
 
 This repository is organized into separate folders for different web technologies:
