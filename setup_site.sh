@@ -88,6 +88,10 @@ sudo systemctl restart nginx
 # Configuring SSL with Certbot
 sudo certbot --nginx -d "$DOMAIN" -d www."$DOMAIN" --non-interactive --agree-tos -m your-email@example.com --redirect
 
+# Add http2 support
+sudo sed -i 's/listen 443 ssl;/listen 443 ssl http2;/g' /etc/nginx/sites-available/"$DOMAIN"
+sudo sed -i 's/listen \[::\]:443 ssl;/listen \[::\]:443 ssl http2;/g' /etc/nginx/sites-available/"$DOMAIN"
+
 # Restarting Nginx
 sudo systemctl restart nginx
 
