@@ -76,7 +76,31 @@ Coming soon...
 - #### Nginx Configuration
 1. Customize the [nginx.conf](adonisjs/nginx.conf) file as needed and place it in your Nginx configuration directory (usually `/etc/nginx/sites-available`) on your VPS.
 
+## Automated Database Backup
+### Backup MariaDB Database to FTP
 
+The [mariadb/backup-ftp-database.yml](mariadb/backup-ftp-database.yml) workflow automates the process of backing up your MariaDB database to an FTP server. 
+This is crucial for ensuring data safety and quick recovery in case of data loss.
+
+#### Workflow Details
+  The workflow is scheduled to run every 12 hours (at 00:00 and 12:00 each day). It can also be triggered manually via GitHub Actions.
+
+#### Steps Performed
+1. Install MariaDB Client and Gzip: Prepares the environment by installing necessary tools.
+2. MySQLDump - Database Backup: Connects to your MariaDB database and creates a compressed backup file.
+3. Set Current Date and Time: Generates a timestamp to label the backup file.
+4. Deploy Backup to FTP: Uploads the backup file to the specified FTP server.
+
+#### Configuration
+To use this workflow, you need to set the following secrets in your GitHub repository:
+- `DATABASE_HOST`: The hostname of your MariaDB server.
+- `DATABASE_USERNAME`: The username for the database.
+- `DATABASE_PASSWORD`: The password for the database.
+- `DATABASE_DB_NAME`: The name of the database to back up.
+- `SERVER_FTP_HOST`: The FTP server hostname.
+- `SERVER_FTP_USERNAME`: The FTP server username.
+- `SERVER_FTP_PASSWORD`: The FTP server password.
+- `SERVER_FTP_PORT`: The FTP server port (optional).
 
 ## Resolve problems
 - resolve the right problem on job 📤 Deploy to VPS
