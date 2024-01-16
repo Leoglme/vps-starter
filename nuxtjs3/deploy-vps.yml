@@ -1,4 +1,4 @@
-name: 🚀 Build and Deploy Nuxt.js 3 App to ovh vps
+name: 🚀 Deploy Nuxt.js 3 App to VPS
 on:
   push:
     branches:

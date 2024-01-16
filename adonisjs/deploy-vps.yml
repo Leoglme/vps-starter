@@ -1,4 +1,4 @@
-name: 🚀 Deploy API to OVH VPS
+name: 🚀 Deploy adonisjs Api to VPS
 
 on:
   push:
@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_DIR: /var/www/dibodev.com
+      DOMAIN: dibodev.com
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
@@ -24,21 +25,17 @@ jobs:
       - name: 🔍 Install dependencies
         run: npm install
 
-      - name: 📝 Create .env file
+      - name: 📝 Setup Production .env File
+        run: cp .env.production .env
+
+      - name: 📝 Update .env with Secrets
         run: |
-          echo "PORT=3333" > .env
-          echo "HOST=0.0.0.0" >> .env
-          echo "NODE_ENV=production" >> .env
-          echo "APP_KEY=${{ secrets.APP_KEY }}" >> .env
-          echo "DRIVE_DISK=local" >> .env
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}" >> .env
-          echo "MYSQL_HOST=${{ secrets.MYSQL_HOST }}" >> .env
-          echo "MYSQL_PORT=3306" >> .env
-          echo "MYSQL_USER=${{ secrets.MYSQL_USER }}" >> .env
-          echo "MYSQL_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> .env
-          echo "CACHE_VIEWS=false" >> .env
-          echo "BASE_URL=https://dibodev.com" >> .env
+          sed -i "s|APP_KEY=.*|APP_KEY=${{ secrets.APP_KEY }}|" .env
+          sed -i "s|MYSQL_DATABASE=.*|MYSQL_DATABASE=${{ secrets.DATABASE_DB_NAME }}|" .env
+          sed -i "s|MYSQL_HOST=.*|MYSQL_HOST=${{ secrets.DATABASE_HOST }}|" .env
+          sed -i "s|SMTP_PORT=.*|SMTP_PORT=${{ secrets.SMTP_PORT }}|" .env
+          sed -i "s|MYSQL_USER=.*|MYSQL_USER=${{ secrets.DATABASE_USERNAME }}|" .env
+          sed -i "s|MYSQL_PASSWORD=.*|MYSQL_PASSWORD=${{ secrets.DATABASE_PASSWORD }}|" .env
 
       - name: 🧱 Build application
         run: |
@@ -58,16 +55,35 @@ jobs:
           source: "./build/"
           target: ${{ env.APP_DIR }}/html
 
-      - name: 🚀 Restart API with PM2, Run Migrations and Seeders
-        uses: appleboy/ssh-action@master
+      - name: 📤 Deploy to VPS
+        uses: easingthemes/ssh-deploy@main
         with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            cd ${{ env.APP_DIR }}/html/build
-            pm2 restart dibodev.com || pm2 start server.js --name dibodev.com
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-azrut --delete"
+          SOURCE: "build/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          TARGET: ${{ env.APP_DIR }}/html
+          SCRIPT_BEFORE: |
+            if ! command -v rsync &> /dev/null
+            then
+              echo "rsync could not be found, installing..."
+              sudo apt-get update
+              sudo apt-get install -y rsync
+            else
+              echo "rsync is already installed."
+            fi
+            echo "Starting deployment..."
+          SCRIPT_AFTER: |
+            cd ${{ env.APP_DIR }}/html
+            echo "Restarting API with PM2..."
+            pm2 restart ${{ env.DOMAIN }} || pm2 start server.js --name ${{ env.DOMAIN }}
             pm2 save
+            echo "Restarting Nginx..."
+            sudo systemctl restart nginx
+            echo "Running Migrations..."
             node ace migration:run --force
+            echo "Running Seeders..."
             node ace db:seed
+            echo "Deployment completed successfully!"

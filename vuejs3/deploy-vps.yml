@@ -1,0 +1,52 @@
+name: 🚀 Deploy Vue.js 3 App to VPS
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      APP_DIR: /var/www/dibodev.com
+
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 🔍 Install dependencies
+        run: npm install
+
+      - name: 🧱 Build application
+        run: npm run build
+
+      - name: 📤 Deploy to VPS
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          ARGS: "-azrut --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }}
+          REMOTE_PORT: ${{ secrets.SSH_PORT }}
+          TARGET: ${{ env.APP_DIR }}/html
+          SCRIPT_BEFORE: |
+            if ! command -v rsync &> /dev/null
+            then
+              echo "rsync could not be found, installing..."
+              sudo apt-get update
+              sudo apt-get install -y rsync
+            else
+              echo "rsync is already installed."
+            fi
+            echo "Starting deployment..."
+          SCRIPT_AFTER: |
+            echo "Vue.js app deployed successfully!"
