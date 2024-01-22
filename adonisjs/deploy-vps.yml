@@ -46,16 +46,6 @@ jobs:
         run: cd build && npm ci --production --ignore-scripts
 
       - name: 📤 Deploy to VPS
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "./build/"
-          target: ${{ env.APP_DIR }}/html
-
-      - name: 📤 Deploy to VPS
         uses: easingthemes/ssh-deploy@main
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
