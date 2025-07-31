@@ -11,8 +11,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      APP_DIR: /var/www/dibodev.com
-      DOMAIN: dibodev.com
+      APP_DIR: /var/www/dibodev.fr
+      DOMAIN: dibodev.fr
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v4
