@@ -13,7 +13,7 @@ jobs:
     name: 🏗️ Build
     runs-on: ubuntu-latest
     env:
-      APP_DIR: /var/www/dibodev.com
+      APP_DIR: /var/www/dibodev.fr
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
@@ -61,4 +61,4 @@ jobs:
           script: |
             cd ${{ env.APP_DIR }}/html/.output
             npm install
-            pm2 restart dibodev.com || pm2 start server.js --name dibodev.com
+            pm2 restart dibodev.fr || pm2 start server.js --name dibodev.fr
