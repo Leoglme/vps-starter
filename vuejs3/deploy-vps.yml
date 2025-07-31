@@ -11,7 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      APP_DIR: /var/www/dibodev.com
+      APP_DIR: /var/www/dibodev.fr
 
     steps:
       - name: 🚚 Get latest code
